@@ -1,0 +1,31 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "tom-soundscape",
+  "main": "src/server.ts",
+  "compatibility_date": "2025-04-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "VIBE_ROOM",
+        "class_name": "VibeRoom"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["VibeRoom"]
+    }
+  ],
+  "ai": {
+    "binding": "AI"
+  },
+  "observability": {
+    "enabled": true
+  }
+  // Custom domain (uncomment and configure when ready)
+  // "routes": [
+  //   { "pattern": "murmur.yourdomain.com", "custom_domain": true }
+  // ]
+}
