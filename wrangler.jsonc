@@ -24,6 +24,9 @@
   "observability": {
     "enabled": true
   },
+  "vars": {
+    "TURNSTILE_API_KEY": "0x4AAAAAACYgIEay44OQ3GdR"
+  },
   "workers_dev": false,
   "routes": [
     { "pattern": "murmur.tomfuertes.com", "custom_domain": true }
