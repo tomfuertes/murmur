@@ -10,7 +10,7 @@ declare global {
           callback: (token: string) => void;
           "error-callback"?: () => void;
           "expired-callback"?: () => void;
-          size?: "invisible" | "normal" | "compact";
+          size?: "compact" | "flexible" | "normal";
         }
       ) => string;
       reset: (widgetId: string) => void;
@@ -42,7 +42,7 @@ export function VibeForm({ onSubmit, isSubmitting, turnstileSiteKey }: VibeFormP
     tokenRef.current = null;
     widgetIdRef.current = window.turnstile.render(containerRef.current, {
       sitekey: turnstileSiteKey,
-      size: "invisible",
+      size: "flexible",
       callback: (token: string) => { tokenRef.current = token; },
       "error-callback": () => { tokenRef.current = null; },
       "expired-callback": () => { tokenRef.current = null; },
