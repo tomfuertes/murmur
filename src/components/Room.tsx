@@ -3,7 +3,7 @@ import { VibeForm } from "./VibeForm";
 import { VibeCanvas } from "./VibeCanvas";
 import type { VibeState } from "../types";
 
-const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined;
+const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_API_KEY as string | undefined;
 
 function VibeDisplay({ state }: { state: VibeState }) {
   return (

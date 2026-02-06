@@ -5,7 +5,7 @@ import type { VibeState, VibePrompt, RoomState, VibeMessage, MusicalKey, Musical
 interface Env {
   AI: Ai;
   VIBE_ROOM: DurableObjectNamespace;
-  TURNSTILE_SECRET: string;
+  TURNSTILE_API_SECRET: string;
 }
 
 const registerCallable = callable();
@@ -129,7 +129,7 @@ export class VibeRoom extends Agent<Env, RoomState> {
   }
 
   private async verifyTurnstile(token: string | undefined) {
-    if (!this.env.TURNSTILE_SECRET) return; // Skip verification when not configured
+    if (!this.env.TURNSTILE_API_SECRET) return; // Skip verification when not configured
     if (!token) throw new Error("Bot verification required.");
     const ip = this.getClientIp();
     const resp = await fetch(
@@ -138,7 +138,7 @@ export class VibeRoom extends Agent<Env, RoomState> {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          secret: this.env.TURNSTILE_SECRET,
+          secret: this.env.TURNSTILE_API_SECRET,
           response: token,
           remoteip: ip,
         }),
