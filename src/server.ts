@@ -129,6 +129,7 @@ export class VibeRoom extends Agent<Env, RoomState> {
   }
 
   private async verifyTurnstile(token: string | undefined) {
+    if (!this.env.TURNSTILE_SECRET) return; // Skip verification when not configured
     if (!token) throw new Error("Bot verification required.");
     const ip = this.getClientIp();
     const resp = await fetch(

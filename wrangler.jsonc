@@ -23,9 +23,9 @@
   },
   "observability": {
     "enabled": true
-  }
-  // Custom domain (uncomment and configure when ready)
-  // "routes": [
-  //   { "pattern": "murmur.yourdomain.com", "custom_domain": true }
-  // ]
+  },
+  "workers_dev": false,
+  "routes": [
+    { "pattern": "murmur.tomfuertes.com", "custom_domain": true }
+  ]
 }
