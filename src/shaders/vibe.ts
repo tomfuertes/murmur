@@ -110,10 +110,27 @@ void main() {
 
   float t = u_time * u_speed * 0.1;
 
-  // Domain warp for swirling organic motion
-  float warpX = snoise(vec3(p * 1.5 + u_seed, t * 0.7)) * u_warp_strength;
-  float warpY = snoise(vec3(p * 1.5 + u_seed + 50.0, t * 0.7 + 30.0)) * u_warp_strength;
-  vec3 domain = vec3(p + vec2(warpX, warpY), t);
+  // --- Milkdrop-style radial coordinates ---
+  float r = length(p);
+  float angle = atan(p.y, p.x);
+
+  // Kaleidoscope: mirror across N segments (controlled by layer mask)
+  int mask = int(u_layer_mask);
+  float segments = ((mask & 4) != 0) ? 6.0 : 4.0;
+  float kAngle = mod(angle, 6.28318 / segments);
+  kAngle = abs(kAngle - 3.14159 / segments);
+  vec2 kp = vec2(cos(kAngle), sin(kAngle)) * r;
+
+  // Domain warp — driven by density (u_warp_strength)
+  float warpX = snoise(vec3(kp * 1.8 + u_seed, t * 0.7)) * u_warp_strength;
+  float warpY = snoise(vec3(kp * 1.8 + u_seed + 50.0, t * 0.7 + 30.0)) * u_warp_strength;
+
+  // Slow rotation driven by speed
+  float rotAngle = t * 0.3;
+  mat2 rot = mat2(cos(rotAngle), -sin(rotAngle), sin(rotAngle), cos(rotAngle));
+  vec2 warped = rot * (kp + vec2(warpX, warpY));
+
+  vec3 domain = vec3(warped, t);
 
   // u_blur affects lacunarity: lower blur = higher lacunarity (sharper detail)
   float lacunarity = mix(2.4, 1.6, u_blur);
@@ -122,28 +139,41 @@ void main() {
   // Remap noise to 0-1 range
   n = n * 0.5 + 0.5;
 
-  // Layer toggling via u_layer_mask (bit-decoded as float)
-  int mask = int(u_layer_mask);
-  float layer1 = ((mask & 1) != 0) ? 1.0 : 0.0;  // Base noise
-  float layer2 = ((mask & 2) != 0) ? 1.0 : 0.0;  // Secondary warp
-  float layer3 = ((mask & 4) != 0) ? 1.0 : 0.0;  // Color variation
-
-  // Secondary warped layer
+  // Secondary warped layer (toggle via mask bit 1)
+  float layer2 = ((mask & 2) != 0) ? 1.0 : 0.0;
   float n2 = fbm(domain * 0.6 + vec3(10.0, 20.0, 0.0), max(u_detail - 1.0, 1.0), lacunarity);
   n2 = n2 * 0.5 + 0.5;
   n = mix(n, n * 0.6 + n2 * 0.4, layer2);
 
-  // Hue variation across the canvas
-  float hueShift = snoise(vec3(p * 0.8, t * 0.3)) * u_hue_spread * layer3;
-  float hue = fract(u_hue_base + hueShift);
+  // Radial glow — brighter toward center (Milkdrop-style focal point)
+  float glow = 1.0 - smoothstep(0.0, 0.8, r);
+  n = n * (0.7 + glow * 0.5);
+
+  // Hue: radial + noise variation for psychedelic color cycling
+  float hueShift = snoise(vec3(p * 0.8, t * 0.3)) * u_hue_spread;
+  float radialHue = angle * u_hue_spread * 0.5; // color follows angle
+  float hue = fract(u_hue_base + hueShift + radialHue);
   float sat = u_saturation;
-  float val = clamp(n * u_brightness * layer1, 0.0, 1.0);
+  float val = clamp(n * u_brightness, 0.0, 1.0);
 
   vec3 color = hsv2rgb(vec3(hue, sat, val));
 
-  // Mix in echo/feedback texture
-  vec3 echo = texture(u_echo_tex, uv).rgb;
-  color = mix(color, echo, u_echo_intensity);
+  // --- Milkdrop-style zoom feedback ---
+  // Sample echo texture with zoom toward center + slight rotation
+  float zoomAmt = 1.0 - u_echo_intensity * 0.04;
+  float echoRot = u_echo_intensity * 0.01;
+  vec2 echoUV = uv - 0.5;
+  mat2 echoMat = mat2(
+    cos(echoRot) * zoomAmt, -sin(echoRot) * zoomAmt,
+    sin(echoRot) * zoomAmt,  cos(echoRot) * zoomAmt
+  );
+  echoUV = echoMat * echoUV + 0.5;
+  vec3 echo = texture(u_echo_tex, echoUV).rgb;
+
+  // Slight color shift on the feedback for trail evolution
+  echo = echo * vec3(0.98, 0.99, 1.01);
+
+  color = mix(color, max(color, echo * 0.95), u_echo_intensity);
 
   fragColor = vec4(color, 1.0);
 }

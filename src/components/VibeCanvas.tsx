@@ -33,15 +33,15 @@ const MODE_STYLE: Record<MusicalMode, { spread: number; saturation: number }> = 
 function vibeToUniforms(state: VibeState) {
   const ms = MODE_STYLE[state.mode];
   return {
-    u_speed: state.tempo / 80, // normalise around 1.0 for ~80 BPM
+    u_speed: state.tempo / 60, // faster tempo = faster visuals, centered at 1.0 for 60 BPM
     u_hue_base: KEY_HUE[state.key],
     u_hue_spread: ms.spread,
     u_saturation: ms.saturation,
     u_blur: state.reverbMix,
-    u_echo_intensity: state.delayMix * 0.6, // keep feedback subtle
-    u_detail: 3.0 + state.density * 2.0, // 3-5 octaves
-    u_warp_strength: 0.3 + state.brightness * 0.7,
-    u_brightness: 0.4 + state.brightness * 0.6,
+    u_echo_intensity: state.delayMix, // full range for zoom-feedback trails
+    u_detail: 2.0 + state.filterCutoff / 8000 * 3.0, // filter cutoff drives detail (2-5 octaves)
+    u_warp_strength: 0.2 + state.density * 1.0, // density drives warping intensity
+    u_brightness: 0.3 + state.brightness * 0.7,
     u_layer_mask: 7.0, // all 3 layers on
     u_seed: state.seed % 1000,
   };
