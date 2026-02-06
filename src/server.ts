@@ -5,6 +5,7 @@ import type { VibeState, VibePrompt, RoomState, VibeMessage, MusicalKey, Musical
 interface Env {
   AI: Ai;
   VIBE_ROOM: DurableObjectNamespace;
+  TURNSTILE_API_KEY: string;
   TURNSTILE_API_SECRET: string;
 }
 
@@ -209,7 +210,7 @@ export class VibeRoom extends Agent<Env, RoomState> {
       FROM prompts ORDER BY created_at DESC LIMIT 20
     `.reverse();
 
-    const msg: VibeMessage = { type: "vibe_state", state, recentPrompts };
+    const msg: VibeMessage = { type: "vibe_state", state, recentPrompts, turnstileKey: this.env.TURNSTILE_API_KEY || undefined };
     connection.send(JSON.stringify(msg));
 
     this.updateListenerCount();

@@ -3,8 +3,6 @@ import { VibeForm } from "./VibeForm";
 import { VibeCanvas } from "./VibeCanvas";
 import type { VibeState } from "../types";
 
-const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_API_KEY as string | undefined;
-
 function VibeDisplay({ state }: { state: VibeState }) {
   return (
     <div className="text-center space-y-6 bg-zinc-950/60 backdrop-blur-sm rounded-xl p-6">
@@ -56,6 +54,7 @@ export function Room() {
     isSubmitting,
     isPlaying,
     error,
+    turnstileKey,
     toggleAudio,
     submitPrompt,
   } = useVibe();
@@ -140,7 +139,7 @@ export function Room() {
       <VibeForm
         onSubmit={submitPrompt}
         isSubmitting={isSubmitting}
-        turnstileSiteKey={turnstileSiteKey}
+        turnstileSiteKey={turnstileKey}
       />
     </div>
   );

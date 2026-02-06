@@ -28,6 +28,6 @@ export interface RoomState {
 }
 
 export type VibeMessage =
-  | { type: "vibe_state"; state: VibeState; recentPrompts: VibePrompt[] }
+  | { type: "vibe_state"; state: VibeState; recentPrompts: VibePrompt[]; turnstileKey?: string }
   | { type: "vibe_updated"; state: VibeState; prompt: VibePrompt }
   | { type: "prompt_rejected"; error: string };

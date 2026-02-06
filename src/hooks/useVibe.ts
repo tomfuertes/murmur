@@ -10,6 +10,7 @@ export function useVibe() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [turnstileKey, setTurnstileKey] = useState<string | undefined>();
   const engineRef = useRef<SoundscapeEngine | null>(null);
   const hasLoadedState = useRef(false);
 
@@ -32,6 +33,7 @@ export function useVibe() {
           if (!hasLoadedState.current) {
             setVibeState(msg.state);
             setRecentPrompts(msg.recentPrompts);
+            if (msg.turnstileKey) setTurnstileKey(msg.turnstileKey);
             hasLoadedState.current = true;
             // Apply to engine if already playing
             if (engineRef.current?.isStarted) {
@@ -103,6 +105,7 @@ export function useVibe() {
     isSubmitting,
     isPlaying,
     error,
+    turnstileKey,
     toggleAudio,
     submitPrompt,
   };
