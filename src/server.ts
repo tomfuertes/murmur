@@ -131,7 +131,7 @@ export class VibeRoom extends Agent<Env, RoomState> {
 
   private async verifyTurnstile(token: string | undefined) {
     if (!this.env.TURNSTILE_API_SECRET) return; // Skip verification when not configured
-    if (!token) return; // Client couldn't obtain token (Turnstile widget failed) — fall through to rate limiting
+    if (!token) throw new Error("Bot verification required.");
     const ip = this.getClientIp();
     const resp = await fetch(
       "https://challenges.cloudflare.com/turnstile/v0/siteverify",
