@@ -8,5 +8,9 @@ dist/
 # Local overrides (e.g., settings.local.json for machine-specific config)
 *.local.*
 
+# MCP / Playwright local config
+.mcp.json
+.playwright-mcp/
+
 # Session notes
 PICKUP.md
