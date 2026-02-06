@@ -169,7 +169,8 @@ export function VibeCanvas({ vibeState }: { vibeState: VibeState | null }) {
       }
 
       const u = uniformsRef.current;
-      const pp = ppRef.current!;
+      const pp = ppRef.current;
+      if (!pp || !programRef.current) return;
       const readIdx = ppIndexRef.current;
       const writeIdx = 1 - readIdx;
 

@@ -151,10 +151,9 @@ void main() {
   float glow = 1.0 - smoothstep(0.0, 0.8, r);
   n = n * (0.7 + glow * 0.5);
 
-  // Hue: radial + noise variation for psychedelic color cycling
-  float hueShift = snoise(vec3(p * 0.8, t * 0.3)) * u_hue_spread;
-  float radialHue = angle / 6.28318 * u_hue_spread; // smooth 0..1 wrap, no seam
-  float hue = fract(u_hue_base + hueShift + radialHue);
+  // Hue: noise-driven variation using kaleidoscope-folded coords (no angular seam)
+  float hueShift = snoise(vec3(warped * 0.8, t * 0.3)) * u_hue_spread;
+  float hue = fract(u_hue_base + hueShift + n * u_hue_spread * 0.5);
   float sat = u_saturation;
   float val = clamp(n * u_brightness, 0.0, 1.0);
 

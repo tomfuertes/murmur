@@ -135,7 +135,7 @@ export function VibeForm({ onSubmit, isSubmitting, turnstileSiteKey }: VibeFormP
             {isSubmitting ? "Shifting..." : "Shift"}
           </button>
         </div>
-        <div ref={containerRef} />
+        <div ref={containerRef} className="overflow-hidden h-0" />
       </div>
     </form>
   );
