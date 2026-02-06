@@ -425,7 +425,7 @@ const ALLOWED_INSTANCE_NAMES = new Set(["room"]);
 
 const SECURITY_HEADERS = {
   "Content-Security-Policy":
-    "default-src 'self'; connect-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; frame-src https://challenges.cloudflare.com",
+    "default-src 'self'; connect-src 'self' wss: https://challenges.cloudflare.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; frame-src https://challenges.cloudflare.com",
   "X-Frame-Options": "DENY",
   "X-Content-Type-Options": "nosniff",
 } as const;
