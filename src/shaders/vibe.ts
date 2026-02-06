@@ -85,7 +85,7 @@ float fbm(vec3 p, float detail, float lacunarity) {
   int octaves = int(floor(detail));
   float frac = fract(detail);
 
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 3; i++) {
     if (i >= octaves + 1) break;
     float n = snoise(p * freq);
     float weight = (i == octaves) ? frac : 1.0;

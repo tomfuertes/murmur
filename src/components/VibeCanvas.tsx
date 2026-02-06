@@ -39,7 +39,7 @@ function vibeToUniforms(state: VibeState) {
     u_saturation: ms.saturation,
     u_blur: state.reverbMix,
     u_echo_intensity: state.delayMix, // full range for zoom-feedback trails
-    u_detail: 2.0 + state.filterCutoff / 8000 * 3.0, // filter cutoff drives detail (2-5 octaves)
+    u_detail: 1.5 + state.filterCutoff / 8000 * 1.5, // filter cutoff drives detail (1.5-3 octaves)
     u_warp_strength: 0.2 + state.density * 1.0, // density drives warping intensity
     u_brightness: 0.3 + state.brightness * 0.7,
     u_layer_mask: 7.0, // all 3 layers on
@@ -127,8 +127,8 @@ export function VibeCanvas({ vibeState }: { vibeState: VibeState | null }) {
     // Fullscreen quad VAO
     vaoRef.current = createFullscreenQuad(gl);
 
-    // Size canvas and create FBOs
-    const dpr = Math.min(window.devicePixelRatio, 2);
+    // Size canvas — use low DPR since the shader is behind glassmorphism
+    const dpr = Math.min(window.devicePixelRatio, 1);
     const resize = () => {
       const w = Math.round(canvas.clientWidth * dpr);
       const h = Math.round(canvas.clientHeight * dpr);
@@ -154,11 +154,18 @@ export function VibeCanvas({ vibeState }: { vibeState: VibeState | null }) {
     };
     document.addEventListener("visibilitychange", onVisibility);
 
+    let lastFrame = 0;
+    const FRAME_INTERVAL = 1 / 30; // cap at 30fps — ambient visuals don't need more
+
     const render = () => {
       rafRef.current = requestAnimationFrame(render);
       if (paused || !currentRef.current || !targetRef.current || !lerpStartRef.current) return;
 
       const now = performance.now() / 1000;
+
+      // Throttle to 30fps
+      if (now - lastFrame < FRAME_INTERVAL) return;
+      lastFrame = now;
 
       // Lerp uniforms
       const elapsed = lerpTimeRef.current > 0 ? now - lerpTimeRef.current : LERP_DURATION;
