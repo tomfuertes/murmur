@@ -112,13 +112,15 @@ void main() {
 
   // --- Milkdrop-style radial coordinates ---
   float r = length(p);
-  float angle = atan(p.y, p.x);
+  float angle = atan(p.y, p.x) + 3.14159; // shift to 0..2PI, moves seam to 9 o'clock behind content
 
   // Kaleidoscope: mirror across N segments (controlled by layer mask)
   int mask = int(u_layer_mask);
   float segments = ((mask & 4) != 0) ? 6.0 : 4.0;
-  float kAngle = mod(angle, 6.28318 / segments);
-  kAngle = abs(kAngle - 3.14159 / segments);
+  float segSize = 6.28318 / segments;
+  float kAngle = mod(angle, segSize);
+  // Triangle-wave fold for seamless mirroring
+  kAngle = segSize * 0.5 - abs(kAngle - segSize * 0.5);
   vec2 kp = vec2(cos(kAngle), sin(kAngle)) * r;
 
   // Domain warp — driven by density (u_warp_strength)
@@ -151,7 +153,7 @@ void main() {
 
   // Hue: radial + noise variation for psychedelic color cycling
   float hueShift = snoise(vec3(p * 0.8, t * 0.3)) * u_hue_spread;
-  float radialHue = angle * u_hue_spread * 0.5; // color follows angle
+  float radialHue = angle / 6.28318 * u_hue_spread; // smooth 0..1 wrap, no seam
   float hue = fract(u_hue_base + hueShift + radialHue);
   float sat = u_saturation;
   float val = clamp(n * u_brightness, 0.0, 1.0);
